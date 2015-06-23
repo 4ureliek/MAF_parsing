@@ -1,8 +1,9 @@
 MAFmicrodel
 =====
 Scripts to obtain micro deletions from a multi species alignment in maf format
+
 A gap will be considered specific to a branch only if it is specific to the species considered.
-For examples:
+	For examples:
        gap i is shared between all species
        gap ii and iii are specific to species 2 and 1 respectively (not enough overlap)
        gap iv is shared between species 3 and 4
@@ -16,13 +17,10 @@ For examples:
      |--|
         |-- specie 4 ATG-ATGCATGCATGCATGCATGCATGCATGCATGCATGG-----------CATGCATGC
 
-IMPORTANT:
-Beforehand the .maf file need to be grepped for species of interest.
-Typically: grep '^\$\|maf\|^a\|hg19\|panTro4\|ponAbe2\|rheMac3\' chr_all.maf > chr_all.primates.maf
+IMPORTANT: the .maf file need to be grepped for species of interest beforehand
+	Typically: grep '^\$\|maf\|^a\|hg19\|panTro4\|ponAbe2\|rheMac3\' chr_all.maf > chr_all.primates.maf
 
-You will also need to make your own version of the script MAF_microdel--2--analyze-gaps-XXX.pl
--> modify the part II (open the file in a text editor). Use the existing ones as templates to edit the lists 
-  (the tree is not necessary, it is just fyi)
+You will also need to make your own version of the script MAF_microdel--2--analyze-gaps-XXX.pl, by modifying the part II (open the file in a text editor). Use the existing ones as templates to edit the lists (the tree is not necessary, it is just fyi).
 
 
 perl MAF_microdel--1--get-gaps.pl
