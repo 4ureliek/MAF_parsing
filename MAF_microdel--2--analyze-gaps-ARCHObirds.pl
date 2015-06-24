@@ -27,7 +27,8 @@ my $v;
 my ($in,$out,$nbsp,$aln,$concat,$bedtools,$help,$chlog) = ("na","na","na","na","na","na","na","na");
 GetOptions ('in=s' => \$in, 'sp=s' => \$nbsp, 'concat' => \$concat, 'aln=s' => \$aln, 'bed=s' => \$bedtools, 'out=s' => \$out, 'chlog' => \$chlog, 'h' => \$help, 'help' => \$help, 'v' => \$v);
 
-my $path = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
+my $path;
+($path,$in,$out,$bedtools) = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
 
 # Get total length of alignement and list of species, using $amount files
 my ($totlen,$spIDs) = MAFmicrodel::get_amounts($in,$aln,$nbsp,$path,$v); #totlen = hash and spIDs = list
@@ -109,45 +110,34 @@ my $files = ();
 print STDERR "     - subtract all gaps shared by all species, including outgroup...\n";
 print STDERR "        (basically it means clean the previous files that have a lot of noise, since it contains all other gaps from species in aln that are removed now)\n";
 $files = MAFmicrodel::split_gaps($spIDs,"no","gaps.1-30","all",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all species (\"archo1\") but not with outgroup [not orientable]..\n";	
 $files = MAFmicrodel::split_gaps(\@archo1,\@not_archo1,"gaps.1-30.not-shared.all","archo1",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all ARCHOSAURIFORMES (\"archo2\" = aves+crocs) but not with any others\n";	
 $files = MAFmicrodel::split_gaps(\@archo2,\@not_archo2,"gaps.1-30.not-shared.archo1","archo2",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all AVES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@aves,\@not_aves,"gaps.1-30.not-shared.archo2","aves",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by all CROCS but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@crocs,\@not_crocs,"gaps.1-30.not-shared.archo2","crocs",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all NEOAVES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@neoaves,\@not_neoaves,"gaps.1-30.not-shared.aves","neoaves",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all PASSERA (\"pass\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@pass,\@not_pass,"gaps.1-30.not-shared.neoaves","pass",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by all GALLO (\"gallo\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@gallo,\@not_gallo,"gaps.1-30.not-shared.neoaves","gallo",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all AUSTRALAVES (\"austr\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.pass","austr",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all PSITTACOPASSERAE but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@psitta,\@not_psitta,"gaps.1-30.not-shared.austr","psitta",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all FINCH but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@finch,\@not_finch,"gaps.1-30.not-shared.psitta","finch",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 
 
@@ -156,7 +146,7 @@ print STDERR "       ..done\n";
 ##########################################################################################################
 $files = MAFmicrodel::spe_gaps($spIDs,$in,$path,$files,$bedtools,$v);
 MAFmicrodel::print_amounts($path,$totlen,$files,$v);
-print STDERR " --- Script is done\n\n";
+print STDERR " --- Script is done\n\n" if ($v);
 exit;
 
 

@@ -27,7 +27,8 @@ my $v;
 my ($in,$out,$nbsp,$aln,$concat,$bedtools,$help,$chlog) = ("na","na","na","na","na","na","na","na");
 GetOptions ('in=s' => \$in, 'sp=s' => \$nbsp, 'concat' => \$concat, 'aln=s' => \$aln, 'bed=s' => \$bedtools, 'out=s' => \$out, 'chlog' => \$chlog, 'h' => \$help, 'help' => \$help, 'v' => \$v);
 
-my $path = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
+my $path;
+($path,$in,$out,$bedtools) = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
 
 # Get total length of alignement and list of species, using $amount files
 my ($totlen,$spIDs) = MAFmicrodel::get_amounts($in,$aln,$nbsp,$path,$v); #totlen = hash and spIDs = list
@@ -132,64 +133,48 @@ my $files = ();
 print STDERR "     - subtract all gaps shared by all species, including outgroup...\n";
 print STDERR "        (basically it means clean the previous files that have a lot of noise, since it contains all other gaps from species in aln that are removed now)\n";
 $files = MAFmicrodel::split_gaps($spIDs,"no","gaps.1-30","all",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all species (\"archo1\") but not with outgroup [not orientable]..\n";	
 $files = MAFmicrodel::split_gaps(\@archo1,\@not_archo1,"gaps.1-30.not-shared.all","archo1",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all TURTLES but not with any others\n";	
 $files = MAFmicrodel::split_gaps(\@turtles,\@not_turtles,"gaps.1-30.not-shared.archo1","turtles",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by 2 TURTLES (\"turtles2\")but not with any others\n";	
 $files = MAFmicrodel::split_gaps(\@turtles2,\@not_turtles2,"gaps.1-30.not-shared.turtles","turtles2",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all ARCHOSAURIFORMES (\"archo2\" = aves+crocs) but not with any others\n";	
 $files = MAFmicrodel::split_gaps(\@archo2,\@not_archo2,"gaps.1-30.not-shared.archo1","archo2",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all (NEO)AVES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@aves,\@not_aves,"gaps.1-30.not-shared.archo2","aves",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all PASSERA but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@passera,\@not_passera,"gaps.1-30.not-shared.aves","passera",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by all GALLO (\"gallo\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@gallo,\@not_gallo,"gaps.1-30.not-shared.aves","gallo",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
-
+	
 print STDERR "     - split gaps between ones shared by all AUSTRALAVES (\"austr\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.pass","austr",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all PASSERIMORPHA (\"passeri\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@passeri,\@not_passeri,"gaps.1-30.not-shared.austr","passeri",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by all FALCONS but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@falcons,\@not_falcons,"gaps.1-30.not-shared.austr","falcons",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
-
+	
 print STDERR "     - split gaps between ones shared by all PSITTACOPASSERAE (\"psitta\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@psitta,\@not_psitta,"gaps.1-30.not-shared.passeri","psitta",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by all PARROTS but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@parrots,\@not_parrots,"gaps.1-30.not-shared.passeri","parrots",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by 2 PARROTS (\"parrots2\") (but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@parrots2,\@not_parrots2,"gaps.1-30.not-shared.parrots","parrots2",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
-
+	
 print STDERR "     - split gaps between ones shared by all 3 FINCH + FLYCATCHER (\"finch1\") but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@finch1,\@not_finch1,"gaps.1-30.not.psitta.psitta","finch1",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
+$files = MAFmicrodel::split_gaps(\@finch1,\@not_finch1,"gaps.1-30.not.psitta.psitta","finch1",$in,$path,$files,$bedtools);	
 print STDERR "     - split gaps between ones shared by the 3 FINCH (\"finch2\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@finch2,\@not_finch2,"gaps.1-30.not.psitta.finch1","finch2",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
 print STDERR "     - split gaps between ones shared by 2 FINCH (\"finch3\") but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@finch3,\@not_finch3,"gaps.1-30.not.psitta.finch2","finch3",$in,$path,$files,$bedtools);
-print STDERR "       ..done\n";	
+	
 
 
 
@@ -198,7 +183,7 @@ print STDERR "       ..done\n";
 ##########################################################################################################
 $files = MAFmicrodel::spe_gaps($spIDs,$in,$path,$files,$bedtools,$v);
 MAFmicrodel::print_amounts($path,$totlen,$files,$v);
-print STDERR " --- Script is done\n\n";
+print STDERR " --- Script is done\n\n" if ($v);
 exit;
 
 

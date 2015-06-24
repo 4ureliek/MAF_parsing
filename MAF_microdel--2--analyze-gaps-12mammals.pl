@@ -27,7 +27,8 @@ my $v;
 my ($in,$out,$nbsp,$aln,$concat,$bedtools,$help,$chlog) = ("na","na","na","na","na","na","na","na");
 GetOptions ('in=s' => \$in, 'sp=s' => \$nbsp, 'concat' => \$concat, 'aln=s' => \$aln, 'bed=s' => \$bedtools, 'out=s' => \$out, 'chlog' => \$chlog, 'h' => \$help, 'help' => \$help, 'v' => \$v);
 
-my $path = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
+my $path;
+($path,$in,$out,$bedtools) = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
 
 # Get total length of alignement and list of species, using $amount files
 my ($totlen,$spIDs) = MAFmicrodel::get_amounts($in,$aln,$nbsp,$path,$v); #totlen = hash and spIDs = list
@@ -104,43 +105,33 @@ my $files = ();
 print STDERR "     - subtract all gaps shared by all species, including outgroup...\n";
 print STDERR "        (basically it means clean the previous files that have a lot of noise, since it contains all other gaps from species in aln that are removed now)\n";
 $files = MAFmicrodel::split_gaps($spIDs,"no","gaps.1-30","all",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by all species (EUTHERIAN) but not with outgroup [not orientable]..\n";	
 $files = MAFmicrodel::split_gaps(\@eutherian,\@not_eutherian,"gaps.1-30.not-shared.all","eutherian",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by BOREOTHERIAN but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@boreo,\@not_boreo,"gaps.1-30.not-shared.eutherian","boreo",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by AFROTHERIAN but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@afro,\@not_afro,"gaps.1-30.not-shared.eutherian","afro",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by SUPRAPRIMATES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@supra,\@not_supra,"gaps.1-30.not-shared.boreo","supra",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by LAURASIATHERIAN but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@laura,\@not_laura,"gaps.1-30.not-shared.boreo","laura",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by PRIMATES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@prim,\@not_prin,"gaps.1-30.not-shared.supra","prim",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by RODENTS but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@rod,\@not_rod,"gaps.1-30.not-shared.supra","rod",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by CARNIVORA but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@carn,\@not_carn,"gaps.1-30.not-shared.laura","carn",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 print STDERR "     - split gaps between ones shared by CHIROPTERA (bats) but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@bats,\@not_bats,"gaps.1-30.not-shared.laura","bats",$in,$path,$files,$bedtools); 
-print STDERR "       ..done\n";	
 
 
 
@@ -149,5 +140,5 @@ print STDERR "       ..done\n";
 ##########################################################################################################
 $files = MAFmicrodel::spe_gaps($spIDs,$in,$path,$files,$bedtools,$v);
 MAFmicrodel::print_amounts($path,$totlen,$files,$v);
-print STDERR " --- Script is done\n\n";
+print STDERR " --- Script is done\n\n" if ($v);
 exit;

@@ -45,6 +45,10 @@ my $usage = "\nUsage [v$version]:
 	This script parse .maf file(s) (multispecies alignment file) and list gaps for all species.
 	It is step 1/2 to obtain small deletions (step 2 = MAF_microdel--2--analyze-gaps-XXX.pl).
 	
+	Outputs will be: 
+	    [0]        [1]          [2]        [3]             [4]  [5]       [6]    [7]
+	    file_block start_of_gap end_of_gap gap_nb_in_block  .  \"strand\" length length_of_block
+	
     MANDATORY ARGUMENTS:	
      -in     => (STRING) directory containing input .maf file(s). 
                          They needs to be previously grepped for species of interest before running this script.
@@ -199,3 +203,4 @@ FILE: foreach my $file (@in) {
 #####################################################
 print STDERR " --- Script is done\n\n" if ($v);
 exit;
+
