@@ -48,15 +48,15 @@ print STDERR "\n --- Analyzing gaps [from UCSC MultiZ 100 ways, 7 birds]
                                |--|     |-- taeGut2     Taeniopygia guttata = Zebra finch
                                |  |  |--|
                                |  |  |  |-- geoFor1     Geospiza fortis = Medium ground finch 
-                        PASSERA|  |--|        
+                        NEOAVES|  |--|        
                             |--|     |----- melUnd1     Melopsittacus undulatus = Budgerigar (common pet parakeet)
-                            |  |  PSITTACOPASSERAE 
+                            |  |  PASSERIMORPHA 
                             |  |
                         AVES|  |----------- colLiv1     Columbia livia = Rock pigeon              
                          |--|        
                          |  |           |-- anaPla1     Anas platyrynchos = Mallard duck              
                        --|  |-----------|
-                         |  GALLO       |-- galGal4     Gallus gallus = Chicken   
+                         |GALLOANSERES  |-- galGal4     Gallus gallus = Chicken   
                          |
                          |----------------- anoCar2     Anolis carolinensis = Lizard (outgroup)\n\n\n" if ($v);
 
@@ -69,16 +69,16 @@ print STDERR "\n --- Analyzing gaps [from UCSC MultiZ 100 ways, 7 birds]
 my @aves = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4");
 my @not_aves = ("anoCar2");
 
-my @pass = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1");
-my @not_pass = ("anaPla1","galGal4","anoCar2");
+my @neo = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1");
+my @not_neo = ("anaPla1","galGal4","anoCar2");
 my @gallo = ("anaPla1","galGal4");
 my @not_gallo = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anoCar2");
 
 my @austr = ("falPer1","taeGut2","geoFor1","melUnd1");
 my @not_austr = ("colLiv1","anaPla1","galGal4","anoCar2");
 
-my @psitta = ("taeGut2","geoFor1","melUnd1");
-my @not_psitta = ("falPer1","colLiv1","anaPla1","galGal4","anoCar2");
+my @pass = ("taeGut2","geoFor1","melUnd1");
+my @not_pass = ("falPer1","colLiv1","anaPla1","galGal4","anoCar2");
 
 my @finch = ("taeGut2","geoFor1");
 my @not_finch = ("melUnd1","falPer1","colLiv1","anaPla1","galGal4","anoCar2");
@@ -92,19 +92,19 @@ $files = MAFmicrodel::split_gaps($spIDs,"no","gaps.1-30","all",$in,$path,$files,
 print STDERR "     - split gaps between ones shared by all species (AVES) but not with outgroup [not orientable]..\n" if ($v);
 $files = MAFmicrodel::split_gaps(\@aves,\@not_aves,"gaps.1-30.not-shared.all","aves",$in,$path,$files,$bedtools,$v); 
 
-print STDERR "     - split gaps between ones shared by all PASSERA (\"pass\") but not with any others\n" if ($v);
-$files = MAFmicrodel::split_gaps(\@pass,\@not_pass,"gaps.1-30.not-shared.aves","pass",$in,$path,$files,$bedtools,$v); 
-print STDERR "     - split gaps between ones shared by all GALLO (\"gallo\") but not with any others\n" if ($v);
+print STDERR "     - split gaps between ones shared by all NEOAVES but not with any others\n" if ($v);
+$files = MAFmicrodel::split_gaps(\@neo,\@not_neo,"gaps.1-30.not-shared.aves","neoaves",$in,$path,$files,$bedtools,$v); 
+print STDERR "     - split gaps between ones shared by all GALLOANSERES (\"gallo\") but not with any others\n" if ($v);
 $files = MAFmicrodel::split_gaps(\@gallo,\@not_gallo,"gaps.1-30.not-shared.aves","gallo",$in,$path,$files,$bedtools,$v); 
 
 print STDERR "     - split gaps between ones shared by all AUSTRALAVES (\"austr\") but not with any others\n" if ($v);
-$files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.pass","austr",$in,$path,$files,$bedtools,$v); 
+$files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.neoaves","austr",$in,$path,$files,$bedtools,$v); 
 
-print STDERR "     - split gaps between ones shared by all PSITTACOPASSERAE but not with any others\n" if ($v);
-$files = MAFmicrodel::split_gaps(\@psitta,\@not_psitta,"gaps.1-30.not-shared.austr","psitta",$in,$path,$files,$bedtools,$v); 
+print STDERR "     - split gaps between ones shared by all PASSERIMORPHA (\"pass\") but not with any others\n" if ($v);
+$files = MAFmicrodel::split_gaps(\@pass,\@not_pass,"gaps.1-30.not-shared.austr","pass",$in,$path,$files,$bedtools,$v); 
 
 print STDERR "     - split gaps between ones shared by all FINCH but not with any others\n" if ($v);
-$files = MAFmicrodel::split_gaps(\@finch,\@not_finch,"gaps.1-30.not-shared.psitta","finch",$in,$path,$files,$bedtools,$v); 
+$files = MAFmicrodel::split_gaps(\@finch,\@not_finch,"gaps.1-30.not-shared.pass","finch",$in,$path,$files,$bedtools,$v); 
 
 
 
