@@ -94,6 +94,9 @@ my @not_prin = ("mm10","rn5","canFam3","felCat5","myoLuc2","pteVam1","bosTau7","
 my @rod = ("mm10","rn5");
 my @not_rod = ("hg19","rheMac3","canFam3","felCat5","myoLuc2","pteVam1","bosTau7","loxAfr3","echTel2","monDom5");
 
+my @carnbat = ("myoLuc2","pteVam1","canFam3","felCat5");
+my @not_carnbat = ("hg19","rheMac3","mm10","rn5","bosTau7","loxAfr3","echTel2","monDom5");
+
 my @carn = ("canFam3","felCat5");
 my @not_carn = ("hg19","rheMac3","mm10","rn5","myoLuc2","pteVam1","bosTau7","loxAfr3","echTel2","monDom5");
 
@@ -121,6 +124,9 @@ $files = MAFmicrodel::split_gaps(\@supra,\@not_supra,"gaps.1-30.not-shared.boreo
 print STDERR "     - split gaps between ones shared by LAURASIATHERIAN but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@laura,\@not_laura,"gaps.1-30.not-shared.boreo","laura",$in,$path,$files,$bedtools); 
 
+print STDERR "     - split gaps between ones shared by CARNIVORA & CHIROPTERA but not with any others\n";
+$files = MAFmicrodel::split_gaps(\@carnbat,\@not_carnbat,"gaps.1-30.not-shared.laura","carnbat",$in,$path,$files,$bedtools); 
+
 print STDERR "     - split gaps between ones shared by PRIMATES but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@prim,\@not_prin,"gaps.1-30.not-shared.supra","prim",$in,$path,$files,$bedtools); 
 
@@ -128,10 +134,10 @@ print STDERR "     - split gaps between ones shared by RODENTS but not with any 
 $files = MAFmicrodel::split_gaps(\@rod,\@not_rod,"gaps.1-30.not-shared.supra","rod",$in,$path,$files,$bedtools); 
 
 print STDERR "     - split gaps between ones shared by CARNIVORA but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@carn,\@not_carn,"gaps.1-30.not-shared.laura","carn",$in,$path,$files,$bedtools); 
+$files = MAFmicrodel::split_gaps(\@carn,\@not_carn,"gaps.1-30.not-shared.carnbat","carn",$in,$path,$files,$bedtools); 
 
 print STDERR "     - split gaps between ones shared by CHIROPTERA (bats) but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@bats,\@not_bats,"gaps.1-30.not-shared.laura","bats",$in,$path,$files,$bedtools); 
+$files = MAFmicrodel::split_gaps(\@bats,\@not_bats,"gaps.1-30.not-shared.carnbat","bats",$in,$path,$files,$bedtools); 
 
 
 

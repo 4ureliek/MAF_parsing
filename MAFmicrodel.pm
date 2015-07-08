@@ -22,7 +22,7 @@ use strict;
 use warnings;
 use Carp;
 
-my $version = "3.0";
+my $version = "3.1";
 
 my $changelog = "
 # UPDATES for MAF_microdel--2--analyze-gaps-XXX.pl
@@ -48,6 +48,8 @@ my $changelog = "
 #               Use of -f 0.8 instead of 0.9 => was making stuff specific when visually they were not
 #               Changelog, usage, options (+ added -concat, -out and -bed options)
 #               Use of intersectBed and not subtractBed, to be able to use -r with the -f 0.80
+#	- v3.1 = 08 Jul 2015
+#				Was missing a branch for mammals
 \n";
 
 my $usage = "\nUsage [v$version]: 
