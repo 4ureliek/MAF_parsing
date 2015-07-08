@@ -49,7 +49,7 @@ my $changelog = "
 #               Changelog, usage, options (+ added -concat, -out and -bed options)
 #               Use of intersectBed and not subtractBed, to be able to use -r with the -f 0.80
 #	- v3.1 = 08 Jul 2015
-#				Was missing a branch for mammals
+#				Branches of chiroptera/rodents/cow are not really resolved
 \n";
 
 my $usage = "\nUsage [v$version]: 
