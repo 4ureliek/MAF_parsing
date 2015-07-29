@@ -54,7 +54,7 @@ my $usage = "\nUsage [v$version]:
       I.  List of sizes of all consecutive empty data for a given species (no data on the browser)
 	      Only when the empty data is interrupting a scaffold (note that it could correspond to a misassembly or rearrangements)
 	      Empty data = no \"s\" line. However, there could be insertion (non aligning bases): in that case,
-	      the large indel will be printed only if 80% of its lower case length is > insertion length
+	      the large indel will be printed only if lower case length - insertion length > lene
 	      
       II. List of sizes of all consecutive empty blocks for a given species (C lines in the maf = continuous:
 	      \"C -- the sequence before and after is contiguous implying that this region was either deleted in the 
@@ -242,7 +242,7 @@ sub thread_deletions {
 						$len += $ref{'len'}{$i};
 					}
 					#Now store info about this deletion, unless < minlen stuff or insertion > 80% of deletion
-					unless (($lennolc < $$min_lene) && (($insert{$sp}{$firstempty-1}) && ($insert{$sp}{$firstempty-1} > ($lennolc*80/100)))) {
+					unless (($lennolc < $$min_lene) || (($insert{$sp}{$firstempty-1}) && ($lennolc - $insert{$sp}{$firstempty-1} > $$min_lene))) {
 						$delid{$maf}{$src}{'empty_del'}++;
 						$id = $src."#".$start."#indelempty_".$delid{$maf}{$src}{'empty_del'}; #Will start at 1
 						$empty_data{$sp}{$id}{'chr'}=$ref{'chr'}{$firstempty};
