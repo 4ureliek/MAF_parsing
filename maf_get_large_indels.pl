@@ -52,7 +52,7 @@ my $usage = "\nUsage [v$version]:
     	
     Outputs:
       I.  List of sizes of all consecutive empty data for a given species (no data on the browser)
-	      Only when the empty data is interrupting a scaffold (note that it could correspond to a misassembly)
+	      Only when the empty data is interrupting a scaffold (note that it could correspond to a misassembly or rearrangements)
 	      Empty data = no \"s\" line. However, there could be insertion (non aligning bases): in that case,
 	      the large indel will be printed only if 80% of its lower case length is > insertion length
 	      
