@@ -6,7 +6,7 @@ maf_get_large_indels.pl
 	I.  List of sizes of all consecutive empty data for a given species (no data on the browser)
 	    Only when the empty data is interrupting a scaffold (note that it could correspond to a misassembly)
 	    Empty data = no \"s\" line. However, there could be insertion (non aligning bases): in that case,
-	    the large indel will be printed only if 80% of its lower case length is > insertion length
+	    the large indel will be printed only if lower case length - insertion length > lene
 	      
 	II. List of sizes of all consecutive empty blocks for a given species (C lines in the maf = continuous:
 	    "C -- the sequence before and after is contiguous implying that this region was either deleted in the 
