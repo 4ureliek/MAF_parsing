@@ -24,7 +24,7 @@
 #              - trying to have threads returning (it was printing the outputs and was done but threads were still started, loop was wrong...)
 #	- v2.2 = 22 Jul 2015
 #            Forgot to collect -sp value
-#	- v3.0 = 23-28 Jul 2015
+#	- v3.0 = 23-29 Jul 2015
 #            Merge with the maf_get_empty_data.pl script to extract with hg19 coordinates, both the C lines and empty blocks.
 #            Because thechnically, they are both potential large deletions.
 #            Also, output both length with and without lower cases in hg19
