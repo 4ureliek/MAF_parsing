@@ -20,7 +20,7 @@ my $changelog = "
 #			 Adapt to outputs of maf_get_large_indels.pl
 #            ecd plots
 #	- v2.1 = 31 Jul 2015
-#			 summary file
+#			 summary file + avoid negative values in the .len files (shouldn't be any though)
 \n";
 
 my $usage = "\nUsage [v$version]: 
@@ -98,15 +98,14 @@ $xlim = "min,max" unless ($xlim);
 ################################################################################
 # MAIN
 ################################################################################
-print STDERR "\n --- Now extracting lengths from file(s)\n" if ($v);
-print STDERR "     - Getting list of files from $in...\n" if (($dir) && ($v));
+print STDERR "\n --- Getting list of files from $in...\n" if (($dir) && ($v));
 #Get list of input files if -dir, or just load the one from -in
 my @files = ();
 ($dir)?(@files = `ls $in/*_del.tab | grep -v _del.tab.pdf | grep -v _del.tab.len.txt`):(push(@files,$in)); #grep -v in case previous outputs of this script
-
 my $path = path($in);
 print STDERR "       ..done\n" if (($dir) && ($v));
 
+print STDERR "\n --- Now extracting lengths from file(s)\n" if ($v);
 ($dir)?($dir = "y"):($dir = "n");
 my @glist = ();
 FILE: foreach my $f (@files) {
@@ -129,7 +128,7 @@ FILE: foreach my $f (@files) {
 		my @l = split('\t',$line);
 		my ($len,$ins) = ($l[8],$l[9]);
 		$len = $len - $ins unless ($ins eq "na");
-		print $ofh "$len\n";
+		print $ofh "$len\n" unless ($len < 1000); #fake bug fix here, because cases of insertions > deletion length in ref were printed
 	}
 	close $ifh;
 	close $ofh;
@@ -139,7 +138,7 @@ print STDERR "     ..done\n\n" if ($v);
 
 #Get stats if relevant
 if ($stats) {
-	print STDERR " --- Getting some stats/summary values\n" if ($v); 
+	print STDERR " --- Getting summary values\n" if ($v); 
 	get_stats($in,\@glist);
 }
 
