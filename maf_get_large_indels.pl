@@ -24,11 +24,12 @@
 #              - trying to have threads returning (it was printing the outputs and was done but threads were still started, loop was wrong...)
 #	- v2.2 = 22 Jul 2015
 #            Forgot to collect -sp value
-#	- v3.0 = 23-29 Jul 2015
+#	- v3.0 = 23-30 Jul 2015
 #            Merge with the maf_get_empty_data.pl script to extract with hg19 coordinates, both the C lines and empty blocks.
 #            Because thechnically, they are both potential large deletions.
 #            Also, output both length with and without lower cases in hg19
 #            Filter on no lc length
+#            Filter out when inserted data > minlen
 
 #  TO DO: add the R plots subroutine  
 #######################################################
@@ -241,17 +242,19 @@ sub thread_deletions {
 						$lennolc += $ref{'lennolc'}{$i};
 						$len += $ref{'len'}{$i};
 					}
-					#Now store info about this deletion, unless < minlen stuff or insertion > 80% of deletion
-					unless (($lennolc < $$min_lene) || (($insert{$sp}{$firstempty-1}) && ($lennolc - $insert{$sp}{$firstempty-1} > $$min_lene))) {
-						$delid{$maf}{$src}{'empty_del'}++;
-						$id = $src."#".$start."#indelempty_".$delid{$maf}{$src}{'empty_del'}; #Will start at 1
-						$empty_data{$sp}{$id}{'chr'}=$ref{'chr'}{$firstempty};
-						$empty_data{$sp}{$id}{'st'}=$ref{'st'}{$firstempty};
-						$empty_data{$sp}{$id}{'en'}=$ref{'st'}{$firstempty}+$len;#length of the reference
-						$empty_data{$sp}{$id}{'lenlc'}=$lenlc;
-						$empty_data{$sp}{$id}{'lennolc'}=$lennolc;
-						$empty_data{$sp}{$id}{'Qst'}=$spinfo{$sp}->[2];									
-						$empty_data{$sp}{$id}{'ins'}=$insert{$sp}{$firstempty-1} if ($insert{$sp}{$firstempty-1}); #If inserted sequence, block just before the first empty block will have the info
+					#Now store info about this deletion, only if nolclen > minlen stuff, unless nolclen minus insertion < minlen
+					if ($lennolc > $$min_lene) {
+						unless (($insert{$sp}{$firstempty-1}) && ($lennolc - $insert{$sp}{$firstempty-1} < $$min_lene))) {
+							$delid{$maf}{$src}{'empty_del'}++;
+							$id = $src."#".$start."#indelempty_".$delid{$maf}{$src}{'empty_del'}; #Will start at 1
+							$empty_data{$sp}{$id}{'chr'}=$ref{'chr'}{$firstempty};
+							$empty_data{$sp}{$id}{'st'}=$ref{'st'}{$firstempty};
+							$empty_data{$sp}{$id}{'en'}=$ref{'st'}{$firstempty}+$len;#length of the reference
+							$empty_data{$sp}{$id}{'lenlc'}=$lenlc;
+							$empty_data{$sp}{$id}{'lennolc'}=$lennolc;
+							$empty_data{$sp}{$id}{'Qst'}=$spinfo{$sp}->[2];									
+							$empty_data{$sp}{$id}{'ins'}=$insert{$sp}{$firstempty-1} if ($insert{$sp}{$firstempty-1}); #If inserted sequence, block just before the first empty block will have the info
+						}	
 					}
 					undef $insert{$sp}; #reinitialize anyway, no need to keep in memory
 					$spinfo{$sp} = \@infos; #reinitialize
@@ -334,8 +337,7 @@ sub print_del {
 sub concat_species {
 	my ($data,$type) = @_;	
 	my $path = cwd($data);
-	my $fullpath = "$path/$1" if ($data =~ /^(.*)\/raw$/);
-	
+	my $fullpath = "$path/$1" if ($data =~ /^(.*)\/raw$/);	
 	my @check = glob("$data/*.$type.tab");
 	if (@check) {	
 		my @dels = `ls $data/*.$type.tab`;
@@ -343,7 +345,7 @@ sub concat_species {
 			chomp ($file);
 			$file =~ s/.*\/(.*)$/$1/;
 			my $sp = $1 if $file =~ /^.*\.maf\.(.+)\.$type\.tab$/;
-			system "cat $data/*$sp.$type.tab > $fullpath/$sp.$type.tab";
+			system "cat $data/*$sp.$type.tab > $fullpath/$sp.$type.tab"; #not the best way - creates little issues for example fr3 and loxAfr3. Wtf is fr3 anyway?? -> Fugu...
 		}
 	} else {
 		 warn "     WARN: no data for $type for any species\n"
