@@ -30,8 +30,6 @@
 #            Also, output both length with and without lower cases in hg19
 #            Filter on no lc length
 #            Filter out when inserted data > minlen
-
-#  TO DO: add the R plots subroutine  
 #######################################################
 #always load forks before anything else
 use forks;
@@ -49,7 +47,7 @@ select((select(STDOUT), $|=1)[0]); #make STDOUT buffer flush immediately
 
 my $version = "3.0";
 my $usage = "\nUsage [v$version]: 
-    perl <scriptname.pl> -dir <dir_with_alignments> [-sp <SP>] [-lenc <X>] [-lene <X>] [-cpu <X>] [-v] [-h|help]
+    perl maf_get_large_indels.pl -in <dir_with_alignments> [-sp <SP>] [-lenc <X>] [-lene <X>] [-cpu <X>] [-v] [-h|help]
     	
     Outputs:
       I.  List of sizes of all consecutive empty data for a given species (no data on the browser)
@@ -68,9 +66,12 @@ my $usage = "\nUsage [v$version]:
 	      lc = lower cases. In column 6, lower cases in reference are removed 
 	           Length in col 6 would be the minimum deletion len (underestimated when ancient TEs, 
 	           but this will remove all TE insertions in the reference that would not be a deletion).
+
+      Script maf_get_large_indels_Rplots.pl can be used to plot in R 
 	
     MANDATORY ARGUMENT:	
-    -dir  (STRING) => directory with all maf files. There can be sub directories in it too.
+    -in   (STRING) => Typically, directory with all maf files, and there can be sub directories in it
+                      Can also be just one file
 	 
     OPTIONAL ARGUMENTS
     -sp   (STRING) => species ID that is the first in the alignment = reference species
@@ -100,7 +101,7 @@ my $cpu = 1;
 my $min_lenc = 1000;
 my $min_lene = 10000;
 my ($dir,$data,$help,$v);
-GetOptions ('dir=s' => \$dir, 'sp=s' => \$sp, 'lenc=s' => \$min_lenc, 'lene=s' => \$min_lene, 'out=s' => \$data, 'cpu=s' => \$cpu, 'h' => \$help, 'help' => \$help, 'v' => \$v);
+GetOptions ('in=s' => \$dir, 'sp=s' => \$sp, 'lenc=s' => \$min_lenc, 'lene=s' => \$min_lene, 'out=s' => \$data, 'cpu=s' => \$cpu, 'h' => \$help, 'help' => \$help, 'v' => \$v);
 
 #check step to see if mandatory argument is provided + if help
 die "\n Version = $version\n\n" if ((! $dir) && ($v));	
@@ -115,8 +116,8 @@ my $path = cwd($dir);
 $data = $dir."_large_indels" unless ($data);
 if ($v) {
 	print STDERR "\n --- Script maf_get_empty.pl started (v$version), with following parameters:\n";
-	print STDERR "      - Directory containing input maf files = $path/$dir\n";
-	print STDERR "      - First species in aln blocks set to: $sp\n";
+	print STDERR "      - Input maf file(s) = $path/$dir\n";
+	print STDERR "      - Reference species (first one in aln blocks) set to: $sp\n";
 	print STDERR "      - Only large indel of length without lowercases > $min_lenc will be in outputs for continuous lines\n";
 	print STDERR "      - Only large indel of length without lowercases > $min_lene will be in outputs for empty data\n";
 	print STDERR "        (also, 80% of the length without lower case will need to be > insertion in the query if any)\n";
@@ -244,7 +245,7 @@ sub thread_deletions {
 					}
 					#Now store info about this deletion, only if nolclen > minlen stuff, unless nolclen minus insertion < minlen
 					if ($lennolc > $$min_lene) {
-						unless (($insert{$sp}{$firstempty-1}) && ($lennolc - $insert{$sp}{$firstempty-1} < $$min_lene))) {
+						unless (($insert{$sp}{$firstempty-1}) && ($lennolc - $insert{$sp}{$firstempty-1} < $$min_lene)) {
 							$delid{$maf}{$src}{'empty_del'}++;
 							$id = $src."#".$start."#indelempty_".$delid{$maf}{$src}{'empty_del'}; #Will start at 1
 							$empty_data{$sp}{$id}{'chr'}=$ref{'chr'}{$firstempty};
@@ -254,7 +255,7 @@ sub thread_deletions {
 							$empty_data{$sp}{$id}{'lennolc'}=$lennolc;
 							$empty_data{$sp}{$id}{'Qst'}=$spinfo{$sp}->[2];									
 							$empty_data{$sp}{$id}{'ins'}=$insert{$sp}{$firstempty-1} if ($insert{$sp}{$firstempty-1}); #If inserted sequence, block just before the first empty block will have the info
-						}	
+						}
 					}
 					undef $insert{$sp}; #reinitialize anyway, no need to keep in memory
 					$spinfo{$sp} = \@infos; #reinitialize
