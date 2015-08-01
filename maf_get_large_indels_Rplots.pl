@@ -24,7 +24,7 @@ my $changelog = "
 \n";
 
 my $usage = "\nUsage [v$version]: 
-	perl <maf_get_large_indels_Rplot.pl> -in <file> [-dir] [-type <plottype>] [-xlim <X,Y>] [-stats] [-pdf] [-v] [-chlog] [-h]
+	perl <maf_get_large_indels_Rplot.pl> -in <file> [-dir] [-len <X>] [-type <plottype>] [-xlim <X,Y>] [-stats] [-pdf] [-v] [-chlog] [-h]
 	
 	This script will process lengths of gaps from output files of the script maf_get_large_indels.pl
 	(without lower cases in reference and minus insertion in Query if relevant)
@@ -43,6 +43,9 @@ my $usage = "\nUsage [v$version]:
      OPTIONAL ARGUMENTS
      -dir    => (BOOL)   Chose this if -in is in fact a directory containing a bunch of .bed files                       
                          Note that the directory should contain no other file with .bed than the ones to parse
+     -len    => (INT)    Minimum length of deletion length (no lc) in reference minus insertion in query
+                         to print (and plot) it.
+                         [Default = 0]
      -type   => (STRING) Type of plot:
                          -type ecd for empirical cumulative distributions (log scale for x axis) [default]
                          -type box for boxplot with notches, no outliers on plots
@@ -67,8 +70,9 @@ my $usage = "\nUsage [v$version]:
 # Get arguments/options / checks
 ################################################################################
 my $type = "ecd";
+my $minlen = 0;
 my ($in,$dir,$xlim,$help,$stats,$pdf,$chlog,$v);
-GetOptions ('in=s' => \$in, 'dir' => \$dir, 'pdf' => \$pdf, 'stats' => \$stats, 'type=s' => \$type, 'xlim=s' => \$xlim, 'h' => \$help, 'help' => \$help, 'chlog' => \$chlog, 'v' => \$v);
+GetOptions ('in=s' => \$in, 'len=s' => \$minlen, 'dir' => \$dir, 'pdf' => \$pdf, 'stats' => \$stats, 'type=s' => \$type, 'xlim=s' => \$xlim, 'h' => \$help, 'help' => \$help, 'chlog' => \$chlog, 'v' => \$v);
 
 #check step to see if mandatory argument is provided + if help
 die "\n Script gap_density.pl version $version\n\n" if ((! $in) && (! $help) && (! $chlog) && ($v));
@@ -85,6 +89,7 @@ print STDERR "\n --- Script maf_get_large_indels_Rplot.pl started (v$version)\n"
 print STDERR "      - Directory containing input files = $in (-dir chosen)\n" if (($dir) && ($v));
 print STDERR "      - Input file = $in\n" if ((! $dir) && ($v));
 die "\n $in does not exist?\n\n" if (($in) && (! -e $in));
+print STDERR "      - Deletions printed only if deletion length (no lc) in reference minus insertion in query > $minlen\n" if ($v);
 print STDERR "      - R command lines will be printed in $in.R.$type.txt, for:\n" if ($v);
 print STDERR "         -> empirical cumulative distributions (log scale for x axis)\n" if (($type eq "ecd") && ($v));
 print STDERR "         -> boxplots with notch and without outliers\n" if (($type eq "box") && ($v));
@@ -128,7 +133,7 @@ FILE: foreach my $f (@files) {
 		my @l = split('\t',$line);
 		my ($len,$ins) = ($l[8],$l[9]);
 		$len = $len - $ins unless ($ins eq "na");
-		print $ofh "$len\n" unless ($len < 1000); #fake bug fix here, because cases of insertions > deletion length in ref were printed
+		print $ofh "$len\n" unless ($len < $minlen);
 	}
 	close $ifh;
 	close $ofh;
@@ -201,15 +206,16 @@ sub get_stats {
 		}
 		close $ifh;
 		#get values
-		@values = sort {$a cmp $b} @values;
+		@values = sort {$a <=> $b} @values;
 		my $min = $values[0];
 		my $max = $values[-1];
 		my $count = @values;
 		my $avg = $sum/$count;
+		my $ravg = int($avg + $avg/abs($avg*2));
 		my $median = median(\@values);
 		#now print
 		open my $ofh, ">>$out" or confess "ERROR (sub get_stats): Failed to open to write $out $!\n";
-		print $ofh "$sp\t$count\t$sum\t$avg\t$median\t$min\t$max\n";
+		print $ofh "$sp\t$count\t$sum\t$ravg\t$median\t$min\t$max\n";
 		close $ofh;
 	}	
 	return;
