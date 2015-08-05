@@ -48,11 +48,11 @@ print STDERR "\n --- Analyzing gaps [from file birds_reestimated_archosaurRef.13
                                |--|     |-- taeGut2     Taeniopygia guttata = Zebra finch
                                |  |  |--|
                                |  |  |  |-- geoFor1     Geospiza fortis = Medium ground finch 
-                        PASSERA|  |--|        
+                        NEOAVES|  |--|        
                             |--|     |----- melUnd1     Melopsittacus undulatus = Budgerigar (common pet parakeet)
-                            |  |  PSITTACOPASSERAE 
+                            |  |  PASSERIMORPHAE 
                             |  |
-                     NEOAVES|  |----------- colLiv1     Columbia livia = Rock pigeon              
+                  NEOGNATHAE|  |----------- colLiv1     Columbia livia = Rock pigeon              
                          |--|        
                          |  |           |-- anaPla1     Anas platyrynchos = Mallard duck              
                          |  |-----------|
@@ -76,30 +76,30 @@ print STDERR "\n --- Analyzing gaps [from file birds_reestimated_archosaurRef.13
 # use Acme::Tools qw(minus);
 # my @diff = minus(\@a, \@bl);
 
-my @archo1 = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","allMis2");
+my @archo1 = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1");
 my @not_archo1 = ("anoCar2");
 
 my @archo2 = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2");
 my @not_archo2 = ("chrPic1","anoCar2");
 
-my @crocs = ("ghaGan1","croPor2","chrPic1");
+my @crocs = ("allMis2","ghaGan1","croPor2");
 my @not_crocs = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4","strCam0","chrPic1","anoCar2");
 my @aves = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4","strCam0");
 my @not_aves = ("allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 
-my @neoaves = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4");
-my @not_neoaves = ("strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
+my @neognathae = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","anaPla1","galGal4");
+my @not_neognathae = ("strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 
-my @pass = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1");
-my @not_pass = ("anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
+my @neoaves = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1");
+my @not_neoaves = ("anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 my @gallo = ("anaPla1","galGal4");
 my @not_gallo = ("falPer1","taeGut2","geoFor1","melUnd1","colLiv1","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 
 my @austr = ("falPer1","taeGut2","geoFor1","melUnd1");
 my @not_austr = ("colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 
-my @psitta = ("taeGut2","geoFor1","melUnd1");
-my @not_psitta = ("falPer1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
+my @passeri = ("taeGut2","geoFor1","melUnd1");
+my @not_passeri = ("falPer1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
 
 my @finch = ("taeGut2","geoFor1");
 my @not_finch = ("melUnd1","falPer1","colLiv1","anaPla1","galGal4","strCam0","allMis2","ghaGan1","croPor2","chrPic1","anoCar2");
@@ -122,22 +122,21 @@ $files = MAFmicrodel::split_gaps(\@aves,\@not_aves,"gaps.1-30.not-shared.archo2"
 print STDERR "     - split gaps between ones shared by all CROCS but not with any others\n";
 $files = MAFmicrodel::split_gaps(\@crocs,\@not_crocs,"gaps.1-30.not-shared.archo2","crocs",$in,$path,$files,$bedtools);
 
-print STDERR "     - split gaps between ones shared by all NEOAVES but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@neoaves,\@not_neoaves,"gaps.1-30.not-shared.aves","neoaves",$in,$path,$files,$bedtools);
+print STDERR "     - split gaps between ones shared by all NEOGNATHAE but not with any others\n";
+$files = MAFmicrodel::split_gaps(\@neognathae,\@not_neognathae,"gaps.1-30.not-shared.aves","neognathae",$in,$path,$files,$bedtools);
 
-print STDERR "     - split gaps between ones shared by all PASSERA (\"pass\") but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@pass,\@not_pass,"gaps.1-30.not-shared.neoaves","pass",$in,$path,$files,$bedtools);
+print STDERR "     - split gaps between ones shared by all NEOAVES (\"pass\") but not with any others\n";
+$files = MAFmicrodel::split_gaps(\@neoaves,\@not_neoaves,"gaps.1-30.not-shared.neognathae","neoaves",$in,$path,$files,$bedtools);
 print STDERR "     - split gaps between ones shared by all GALLO (\"gallo\") but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@gallo,\@not_gallo,"gaps.1-30.not-shared.neoaves","gallo",$in,$path,$files,$bedtools);
+$files = MAFmicrodel::split_gaps(\@gallo,\@not_gallo,"gaps.1-30.not-shared.neognathae","gallo",$in,$path,$files,$bedtools);
 
 print STDERR "     - split gaps between ones shared by all AUSTRALAVES (\"austr\") but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.pass","austr",$in,$path,$files,$bedtools);
-
-print STDERR "     - split gaps between ones shared by all PSITTACOPASSERAE but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@psitta,\@not_psitta,"gaps.1-30.not-shared.austr","psitta",$in,$path,$files,$bedtools);
+$files = MAFmicrodel::split_gaps(\@austr,\@not_austr,"gaps.1-30.not-shared.neoaves","austr",$in,$path,$files,$bedtools);
+print STDERR "     - split gaps between ones shared by all PASSERIMORPHAE but not with any others\n";
+$files = MAFmicrodel::split_gaps(\@passeri,\@not_passeri,"gaps.1-30.not-shared.neoaves","passeri",$in,$path,$files,$bedtools);
 
 print STDERR "     - split gaps between ones shared by all FINCH but not with any others\n";
-$files = MAFmicrodel::split_gaps(\@finch,\@not_finch,"gaps.1-30.not-shared.psitta","finch",$in,$path,$files,$bedtools);
+$files = MAFmicrodel::split_gaps(\@finch,\@not_finch,"gaps.1-30.not-shared.passeri","finch",$in,$path,$files,$bedtools);
 
 
 
