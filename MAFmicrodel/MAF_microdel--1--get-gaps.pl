@@ -13,7 +13,7 @@ use Carp;
 use Getopt::Long;
 use Bio::AlignIO;
 
-my $version = "2.4";
+my $version = "2.6";
 my $changelog = "
 #	- v1.0 = 22 Dec 2011. Other script named MAF_to_fasta_Gapfreq_SpeBranches_9spec.pl.
 #				Was doing the same thing, but problem was situation like that:
@@ -37,10 +37,14 @@ my $changelog = "
 #				Bug fix in the sub get_amounts (there were no outputs)
 #	- v2.4 = 18 Jun 2015
 #				Bug fix in printing gaps
+#	- v2.5 = 21 Jul 2015
+#				Change ls to avoid getting the processed file in the list (.maf.*.maf)
+#	- v2.6 = 06 Oct 2015
+#				Option to filter out small blocks (-len)
 \n";
 
 my $usage = "\nUsage [v$version]: 
-	perl MAF_microdel--1--get-gaps.pl -in <dir> -sp <X> [-v] [-chlog] [-h]
+	perl MAF_microdel--1--get-gaps.pl -in <dir> -sp <X> [-len <X>] [-v] [-chlog] [-h]
 	
 	This script parse .maf file(s) (multispecies alignment file) and list gaps for all species.
 	It is step 1/2 to obtain small deletions (step 2 = MAF_microdel--2--analyze-gaps-XXX.pl).
@@ -54,6 +58,9 @@ my $usage = "\nUsage [v$version]:
                          They needs to be previously grepped for species of interest before running this script.
                          For example: grep '^\$\|maf\|^a\|hg19\|panTro4\|ponAbe2\|rheMac3\' chr_all.maf > chr_all.primates.maf
      -sp     => (INT)    number of species retained, to filter blocks that have no info for any species
+     -len    => (INT)    Set a minimum length of blocks to be filtered out
+                         Default: 1
+                         Typically, -len 50 (30 nt indels won't be in small blocks...)
 
     OPTIONAL ARGUMENTS     
      -v      => (BOOL)   verbose mode, make the script talks to you
@@ -61,9 +68,9 @@ my $usage = "\nUsage [v$version]:
      -chlog  => (BOOL)   print change log (updates)
      -h|help => (BOOL)   print this usage\n\n";  
 
-
+my $len = 1;
 my ($in,$nbsp,$help,$v,$chlog);
-GetOptions ('in=s' => \$in, 'sp=s' => \$nbsp, 'chlog' => \$chlog, 'h' => \$help, 'help' => \$help, 'v' => \$v);
+GetOptions ('in=s' => \$in, 'sp=s' => \$nbsp, 'len=s' => \$len, 'chlog' => \$chlog, 'h' => \$help, 'help' => \$help, 'v' => \$v);
 
 #check step to see if mandatory argument is provided + if help/changelog
 die "\n Script MAF_microdel--1--get-gaps.pl version $version\n\n" if ((! $in) && (! $nbsp) && (! $help) && (! $chlog) && ($v));
@@ -77,11 +84,12 @@ $in =~ s/\/$//; #remove / at the end of directory
 if ($v) {
 	print STDERR "\n --- MAF_microdel--1--get-gaps.pl version $version started, with:\n";
 	print STDERR "      - Input files in $in\n";
-	print STDERR "      - Number of species per block: $nbsp\n\n";
+	print STDERR "      - Number of species per block: $nbsp\n";
+	print STDERR "      - Blocks smaller than $len will be filtered out\n\n";
 }
 
 print STDERR " --- Gaps in alignement are being listed:\n" if ($v);
-my @in = `ls $in/*.maf`;
+my @in = `ls $in/*.maf | grep -v $in/*.maf.*.maf`;
 FILE: foreach my $file (@in) {
 	chomp ($file);
 	next FILE unless ($file);
@@ -91,7 +99,8 @@ FILE: foreach my $file (@in) {
 	print STDERR " --- $file\n" if ($v);
 	my %totlen = ();
 	my @spIDs = ();
-	my $outfile = "$file.$nbsp.maf";
+	my $outfile; 
+	($len == 1)?($outfile = "$file.$nbsp.maf"):($outfile = "$file.$nbsp.$len.maf");
 	unless (-e $outfile) {
 		print STDERR "      - $outfile does not exists => get new MAF file containing only blocks with these $nbsp species\n" if ($v);
 		open (my $infh, "<$file") or confess  "\t    ERROR - Failed to open to read $file $!\n";
@@ -103,6 +112,7 @@ FILE: foreach my $file (@in) {
 		my %checksp = ();
 		my $processed = 0;
 		my $ID;
+		my $blocklen;
 		while (<$infh>) {
 			chomp(my $currline = $_);
 			print $outfh "$currline\n" if (substr($currline,0,1) eq "#");
@@ -111,11 +121,15 @@ FILE: foreach my $file (@in) {
 				%checksp = (); #reinitialize this as well
 				@currblock = (); #reiniate list since it is beginning of block
 				push(@currblock,$currline);
+				$blocklen = 0; #reinitialize
 			}
-			if ($currline =~ /^s/) { #s lines = alignement lines ie sequence infos
+			if (($currline =~ /^s/) && (($c == 0) || ($blocklen > $len))) { #s lines = alignement lines ie sequence infos; also need to either have $c = 0 (first species), or the block len > the len set in options
 				push(@currblock,$currline);
 				my @name = split(/\./,$currline);
 				$ID = $name[0];
+				my @sequence = split('\s+',$currline);
+				$blocklen = length($sequence[6]); #this will be done on the first line only
+				print STDERR "block lenght = $blocklen\n";
 				$c++ unless ($checksp{$ID});
 				if ($c == $nbsp) { #ie reach number of species asked for
 					print $outfh "\n";
