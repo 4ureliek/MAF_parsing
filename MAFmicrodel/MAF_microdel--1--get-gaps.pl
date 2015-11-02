@@ -13,7 +13,7 @@ use Carp;
 use Getopt::Long;
 use Bio::AlignIO;
 
-my $version = "2.6";
+my $version = "2.7";
 my $changelog = "
 #	- v1.0 = 22 Dec 2011. Other script named MAF_to_fasta_Gapfreq_SpeBranches_9spec.pl.
 #				Was doing the same thing, but problem was situation like that:
@@ -41,6 +41,9 @@ my $changelog = "
 #				Change ls to avoid getting the processed file in the list (.maf.*.maf)
 #	- v2.6 = 06 Oct 2015
 #				Option to filter out small blocks (-len)
+#	- v2.7 = 30 Oct 2015
+#				Fix bug in the grep -v at step to avoid getting the processed file in the list (.maf.*.maf)
+
 \n";
 
 my $usage = "\nUsage [v$version]: 
@@ -89,7 +92,7 @@ if ($v) {
 }
 
 print STDERR " --- Gaps in alignement are being listed:\n" if ($v);
-my @in = `ls $in/*.maf | grep -v $in/*.maf.*.maf`;
+my @in = `ls $in/*.maf | grep -v *.maf.*.maf`;
 FILE: foreach my $file (@in) {
 	chomp ($file);
 	next FILE unless ($file);
@@ -129,7 +132,6 @@ FILE: foreach my $file (@in) {
 				$ID = $name[0];
 				my @sequence = split('\s+',$currline);
 				$blocklen = length($sequence[6]); #this will be done on the first line only
-				print STDERR "block lenght = $blocklen\n";
 				$c++ unless ($checksp{$ID});
 				if ($c == $nbsp) { #ie reach number of species asked for
 					print $outfh "\n";
