@@ -12,7 +12,7 @@
 #            It is very stringent - a gap is considered specific to a species or group of species if not shared by any others.
 #
 # BEDTOOLS NOTES:
-#	consider same gap if overlap is >90% (ie flexibility of 1nt per 10nt of gaps) => option -f 0.80
+#	consider same gap if overlap is >80% (ie flexibility of 1nt per 10nt of gaps) => option -f 0.80
 #	this min overlap is for BOTH sense, ie if BIG gap in one specie, and a small one in the other, not same gap => option -r [only for Intersect]
 #	options -wa -wb allow to keep the whole thing (ie => join; keep original entry of a or b or both)
 #	to do a subtraction that keeps only shared stuff, ie exclude => -v means keep only stuff that DON'T overlap
@@ -49,7 +49,9 @@ my $changelog = "
 #               Changelog, usage, options (+ added -concat, -out and -bed options)
 #               Use of intersectBed and not subtractBed, to be able to use -r with the -f 0.80
 #	- v3.1 = 08 Jul 2015
-#				Branches of chiroptera/rodents/cow are not really resolved
+#				Update of MAF_microdel--2--analyze-gaps-12mammals, because branches of chiroptera/rodents/cow don't seem really resolved? => 2 scripts
+#	- v3.2 = 21 Sep 2017
+#	            MAFmicrodel.pm update: totgaplen could be 0 => avoid trying to divide by it then
 \n";
 
 my $usage = "\nUsage [v$version]: 
@@ -91,7 +93,7 @@ my $usage = "\nUsage [v$version]:
 
 #----------------------------------------------------------------------------
 # Extract info from the amount file(s), or from aln files
-# my $path = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
+# ($path,$in,$out,$bedtools) = MAFmicrodel::check_options($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v);
 #----------------------------------------------------------------------------
 sub check_options {
 	my ($bedtools,$in,$out,$nbsp,$aln,$concat,$help,$chlog,$v) = @_;
@@ -187,13 +189,17 @@ sub get_amounts {
 sub concat_gaps {
 	my ($spIDs,$in,$concat,$v) = @_;	
 	print STDERR " --- Concatenating .bed files for each species into 1...\n" if (($concat ne "na") && ($v));
+	print STDERR " --- Checking for _*.gaps.1-30.bed files for each species ...\n" if (($concat eq "na") && ($v));
 	SPECIES: foreach my $sp (@{$spIDs}) {
+		#check if exists
+		if (-e "$in/_$sp.gaps.1-30.bed") {
+		 	print STDERR "      - skipping $sp ($in/_$sp.gaps.1-30.bed exists)\n" if ($v);
+		 	next SPECIES;
+		}
+		#if not then carry on; first check if several files but -concat not set 
 		my @list = `ls $in/*$sp.gaps.1-30.bed`;
 		die "\t    ERROR - Several input files *.gaps.1-30.bed found for $sp, did you forget to set -concat?\n" if (($concat eq "na") && ($list[1]));
-		 if (-e "$in/_$sp.gaps.1-30.bed") {
-		 	print STDERR "     - skipping $sp ($in/_$sp.gaps.1-30.bed exists)\n" if ($v);
-		 	next SPECIES;
-		 }
+		#proceed
 		`cat $in/*$sp.gaps.1-30.bed > $in/_$sp.gaps.1-30.bed`;
 	}
 	print STDERR "      - done\n\n" if ($v);
@@ -344,7 +350,7 @@ sub print_amounts {
 		#0				1		2	3	4	5	6			7
 		#chr1_block.4	start	end	nb	.	+	gap_len		aln_len(block)
 		open(my $infh, "<$f") or confess "\t    ERROR - can not open to read file $f $!";
-		my $totgaplen;
+		my $totgaplen = 0;
 		my %gapcount;
 		while (<$infh>) {
 			chomp (my $line = $_);
@@ -359,7 +365,8 @@ sub print_amounts {
 		foreach my $gap (sort keys %gapcount)  {
 			$gaps++;
 		}
-		my $gap_per = $totgaplen / $tot * 100;	
+		my $gap_per = 0;
+		$gap_per = $totgaplen / $tot * 100 if ($totgaplen > 0);	
 		print $outfh "$f\t$gaps\t$totgaplen\t$gap_per\t\n";	
 	}
 	close $outfh;
