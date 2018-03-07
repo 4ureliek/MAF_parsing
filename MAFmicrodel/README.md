@@ -1,16 +1,15 @@
-perl MAF_microdel.pl
-=====
-Script to obtain micro deletions from a multi species alignment in maf format.
+# MAF_microdel.pl
+## To obtain micro deletions from a multi species alignment in maf format
 
 PLEASE CITE: `Kapusta, Suh & Feschotte (2017) PNAS (doi: 10.1073/pnas.1616702114)`
-    
+
 And link to: `$SCRIPTNAME, vX.X, https://github.com/4ureliek/MAF_parsing`
  	
-REQUIREMENTS
+### REQUIREMENTS
     BEDtools is required for this pipeline to run (Quinlan AR and Hall IM, 2010. Bioinformatics)
     Available at: https://github.com/arq5x/bedtools2
     
-STEPS OF THE SCRIPT:
+### STEPS OF THE SCRIPT
     1. Rewrite the maf files, with only the lines of the species present in the tree (set with -t)
        Like all files, these will be in the directory set with -o
     
@@ -42,25 +41,25 @@ STEPS OF THE SCRIPT:
         - To be able to use -r, intersectBed -v instead of subtractBed is used
           (-v means keep only stuff that don't overlap)
 	
-USAGE:
-`perl $SCRIPTNAME -m <dir_with_maf> -o <output_dir> -t <tree.nwk> [-b <path>] [-v] [-l] [-h]
+### USAGE
+	perl $SCRIPTNAME -m <dir_with_maf> -o <output_dir> -t <tree.nwk> [-b <path>] [-v] [-l] [-h]
 
-MANDATORY ARGUMENTS:	
-     -m,--maf  => (STRING) Directory containting the .maf files to parse
-     -o,--out  => (STRING) Directory where to write the files = _*.gaps.1-30.bed
-                           Will also contain *_amount.txt file(s)
-                           And the analyzed gaps
-     -t,--tree => (STRING) Species tree, in newick format. This will guide the gap analysis.
-                           Thus, the species IDs NEED to match between the .maf files and the tree,
-                           and ONLY the species of interest can be in the tree
-                           Typically: (((((hg19,rheMac3),(mm10,rn5)),((canFam3,felCat5),(myoLuc2,pteVam1),bosTau7)),(loxAfr3,echTel2)),monDom5);
-                         
-OPTIONAL ARGUMENTS
-     -f,--f    => (INT)    Set -f to X to filter out blocks < X nt
-                           Default: 50 (30 nt indels won't be in small blocks...)
-     -b,--bed  => (STRING) If BEDTool binaries are not in your path, 
-                           use this option to provide path of BEDtools bin directory
-     -v        => (BOOL)   Verbose mode, make the script talks to you
-     -v        => (BOOL)   Print version if only option
-     -l,--log  => (BOOL)   Print change log (updates)
-     -h,--help => (BOOL)   Print this usage1
+	MANDATORY ARGUMENTS:	
+	     -m,--maf  => (STRING) Directory containting the .maf files to parse
+	     -o,--out  => (STRING) Directory where to write the files = _*.gaps.1-30.bed
+				   Will also contain *_amount.txt file(s)
+				   And the analyzed gaps
+	     -t,--tree => (STRING) Species tree, in newick format. This will guide the gap analysis.
+				   Thus, the species IDs NEED to match between the .maf files and the tree,
+				   and ONLY the species of interest can be in the tree
+				   Typically: (((((hg19,rheMac3),(mm10,rn5)),((canFam3,felCat5),(myoLuc2,pteVam1),bosTau7)),(loxAfr3,echTel2)),monDom5);
+
+	OPTIONAL ARGUMENTS
+	     -f,--f    => (INT)    Set -f to X to filter out blocks < X nt
+				   Default: 50 (30 nt indels won't be in small blocks...)
+	     -b,--bed  => (STRING) If BEDTool binaries are not in your path, 
+				   use this option to provide path of BEDtools bin directory
+	     -v        => (BOOL)   Verbose mode, make the script talks to you
+	     -v        => (BOOL)   Print version if only option
+	     -l,--log  => (BOOL)   Print change log (updates)
+	     -h,--help => (BOOL)   Print this usage
