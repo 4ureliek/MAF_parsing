@@ -3,7 +3,7 @@
 
 PLEASE CITE: `Kapusta, Suh & Feschotte (2017) PNAS (doi: 10.1073/pnas.1616702114)`
 
-And link to: `$SCRIPTNAME, vX.X, https://github.com/4ureliek/MAF_parsing`
+And link to: `MAF_microdel.pl, v4.0, https://github.com/4ureliek/MAF_parsing`
  	
 ### REQUIREMENTS
     BEDtools is required for this pipeline to run (Quinlan AR and Hall IM, 2010. Bioinformatics)
