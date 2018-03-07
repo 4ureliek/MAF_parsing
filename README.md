@@ -1,16 +1,16 @@
 MAF_parsing_freeze_PNAS2017
 =====
-This folder contains the code used in the publication: 
-Kapusta, Suh & Feschotte (2017) PNAS (doi: 10.1073/pnas.1616702114) 
+This folder contains the code used in [this publication:](http://www.pnas.org/content/114/8/E1460)
+
+`Kapusta, Suh & Feschotte (2017) PNAS doi: 10.1073/pnas.1616702114`
 
 MAF_microdel.pl v4.0 gives identical results, but is WAY easier to run.
-
 
 MAFmicrodel
 =====
 From a multi species alignment in maf format and a newick tree, this script outputs microdeletions (1 to 30nt) of the various branches.
-See its own README for more details: 
 
+See its own README for more details
 
 maf_get_large_indels.pl
 =====
@@ -33,5 +33,3 @@ maf_get_large_indels.pl
 	      lc = lower cases. In column 6, lower cases in reference are removed 
 	           Length in col 6 would be the minimum deletion len (underestimated when ancient TEs, 
 	           but this will remove all TE insertions in the reference that would not be a deletion).
-
-
