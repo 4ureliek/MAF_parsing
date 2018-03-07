@@ -41,7 +41,7 @@ set_usage();
 sub set_usage {
 	$USAGE = "\nUsage [v$VERSION]: 
     perl $SCRIPTNAME -m <dir_with_maf> -o <output_dir> -t <tree.nwk>
-                        [-bed <path>] [-v] [-chlog] [-h]
+                        [-b <path>] [-v] [-l] [-h]
 	
     PLEASE CITE: 
     Kapusta, Suh & Feschotte (2017) PNAS (doi: 10.1073/pnas.1616702114)  
