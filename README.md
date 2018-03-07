@@ -6,7 +6,7 @@ MAF_microdel.pl v4.0 gives identical results, but is WAY easier to run.
 
 ## MAFmicrodel
 From a multi species alignment in maf format and a newick tree, this script outputs microdeletions (1 to 30nt) of the various branches.
-(See its own README for more details)[https://github.com/4ureliek/MAF_parsing/blob/master/MAFmicrodel/README.md]
+[See its own README for more details](https://github.com/4ureliek/MAF_parsing/blob/master/MAFmicrodel/README.md])
 
 ## maf_get_large_indels.pl
 	USAGE:
