@@ -1,19 +1,15 @@
-MAF_parsing_freeze_PNAS2017
-=====
+## MAF_parsing_freeze_PNAS2017
 This folder contains the code used in [this publication:](http://www.pnas.org/content/114/8/E1460)
-
 `Kapusta, Suh & Feschotte (2017) PNAS doi: 10.1073/pnas.1616702114`
 
 MAF_microdel.pl v4.0 gives identical results, but is WAY easier to run.
 
-MAFmicrodel
-=====
+## MAFmicrodel
 From a multi species alignment in maf format and a newick tree, this script outputs microdeletions (1 to 30nt) of the various branches.
+(See its own README for more details)[https://github.com/4ureliek/MAF_parsing/blob/master/MAFmicrodel/README.md]
 
-See its own README for more details
-
-maf_get_large_indels.pl
-=====
+## maf_get_large_indels.pl
+	USAGE:
 	perl <scriptname.pl> -dir <dir_with_alignments> [-sp <SP>] [-lenc <X>] [-lene <X>] [-cpu <X>] [-v] [-h|help]
     	
 	Outputs:
